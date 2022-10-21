@@ -13,9 +13,9 @@ WiFiServer server(80);
 
 //creamos la  base de datos en el programa
 FirebaseData fbdo;
-// ni idea que hacemos aca
+
 FirebaseAuth auth;
-// y aca menos
+
 FirebaseConfig config;
 unsigned long datamillis=0;
 int count = 0;
@@ -59,30 +59,26 @@ if(Firebase.RTDB.getString(&fbdo,"Minuto")){
   Minuto = fbdo.stringData();
   //Serial.print("minuto");
   //Serial.println(Minuto);
- //delay(1000);
+  //delay(1000);
   }
-  //int nH = hour();
-  //int nM = minute();
-  //String nH1 = String(nH);
-  //String nM1 = String(nM);
-  //Serial.print(nH1);
-  //Serial.print(":");
-  //Serial.println(nM1);
-  //if(Hora == nH1 && Minuto == nM1){
-    
-    //Serial.println("prendido");
-    //digitalWrite(6,OUTPUT);
-    //servo.write(180);
-    //delay(10000);
-    //servo.write(0);
-//}
-//else{
-  
-  //digitalWrite(6,LOW);}
-  //Serial.println("apagado");
-  
-
-// }
+  int nH = hour();
+  int nM = minute();
+  String nH1 = String(nH);
+  String nM1 = String(nM);
+  Serial.print(nH1);
+  Serial.print(":");
+  Serial.println(nM1);
+  if(Hora == nH1 && Minuto == nM1){
+    Serial.println("prendido");
+    digitalWrite(6,OUTPUT);
+    servo.write(180);
+    delay(10000);
+    servo.write(0);
+}
+else{
+  digitalWrite(6,LOW);}
+  Serial.println("apagado");
+ }
 
 WiFiClient client = server.available();
   if (!client) {
