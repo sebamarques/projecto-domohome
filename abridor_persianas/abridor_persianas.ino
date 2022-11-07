@@ -5,11 +5,10 @@
 #include <DS3232RTC.h>      
 #include <TimeLib.h>
 #include <string.h>
-#include <Servo.h>
 
 WiFiServer server(80);
-#define data_url  "lednodemcu-c09c6-default-rtdb.firebaseio.com"
-#define data_secret  "PoutAh31PLV2r7cEfY5ROUFc5CRkbktl0gGQy6Qf"
+#define data_url  "https://persiana-97f05-default-rtdb.firebaseio.com/"
+#define data_secret  "SACZnduTWg7Rcrt88TUGKqAuSRLPJLSBaERJg6YN"
 
 //creamos la  base de datos en el programa
 FirebaseData fbdo;
@@ -19,16 +18,19 @@ FirebaseAuth auth;
 FirebaseConfig config;
 unsigned long datamillis=0;
 int count = 0;
-
+int in1 = 4;
+int in2 = 5;
 void setup(){
   Serial.begin(115200);
+  pinMode(in1,OUTPUT);
+  pinMode(in2,OUTPUT);
   WiFiManager wf;
   setTime(14,17,8,6,9,2022);
   //descomentar linea para resetear configuracion de wifi
   //wf.resetSettings();
   wf.autoConnect("miwifi","contraseña");
   //
-  IPAddress ip(192,168,1,21);     
+  IPAddress ip(192,168,1,22);     
   IPAddress gateway(192,168,1,1);   
   IPAddress subnet(255,255,255,0); 
   config.database_url = data_url;
@@ -45,41 +47,58 @@ server.begin();
 }
 String Hora;
 String Minuto;
+String Hora1;
+String Minuto1;
 
 void loop(){
- 
-if(Firebase.RTDB.getString(&fbdo,"Hora")){
+  
+if(Firebase.RTDB.getString(&fbdo,"DIA/Hora")){
   Hora = fbdo.stringData();
-  //Serial.print("Hora");
-  //Serial.println(Hora);
-  //delay(1000);
+  Serial.println("esta es el dia");
+  Serial.println(Hora);
+  delay(1000);
   }
  
-if(Firebase.RTDB.getString(&fbdo,"Minuto")){
+if(Firebase.RTDB.getString(&fbdo,"DIA/Minuto")){
   Minuto = fbdo.stringData();
-  //Serial.print("minuto");
-  //Serial.println(Minuto);
-  //delay(1000);
+  Serial.println(Minuto);
+  
+  delay(1000);
+  }
+  
+if(Firebase.RTDB.getString(&fbdo,"NOCHE/Hora")){
+  Hora1 = fbdo.stringData();
+  Serial.println("esto es la noche");
+  Serial.println(Hora1);
+  delay(1000);
+  }
+if(Firebase.RTDB.getString(&fbdo,"NOCHE/Minuto")){
+  Minuto1 = fbdo.stringData();
+  Serial.println(Minuto1);
+  delay(1000);
   }
   int nH = hour();
   int nM = minute();
   String nH1 = String(nH);
   String nM1 = String(nM);
-  Serial.print(nH1);
+  
+  /*Serial.print(nH1);
   Serial.print(":");
-  Serial.println(nM1);
+  Serial.println(nM1);*/
   if(Hora == nH1 && Minuto == nM1){
-    Serial.println("prendido");
-    digitalWrite(6,OUTPUT);
-    servo.write(180);
-    delay(10000);
-    servo.write(0);
-}
-else{
-  digitalWrite(6,LOW);}
-  Serial.println("apagado");
- }
+   digitalWrite(in1,LOW);
+   digitalWrite(in2,HIGH);
+   delay(7000);
+   digitalWrite(in2,LOW);
 
+}
+
+  if(Hora1 == nH1 && Minuto1 == nM1){
+    digitalWrite(in2,LOW);
+    digitalWrite(in1,HIGH);
+    delay(7000);
+    digitalWrite(in1,LOW);
+    }
 WiFiClient client = server.available();
   if (!client) {
     return;}
@@ -89,17 +108,19 @@ WiFiClient client = server.available();
   String request = client.readStringUntil('\r');
   Serial.println(request); //Imprimimos la solicitud
   client.flush(); //Descartamos los datos que se han escrito en el cliente y no se han leído
-   
-  if (request.indexOf("/LED=OFF") != -1){
-   Serial.println("apagado");
-   // digitalWrite(14,HIGH);
-   // delay(1000);
-  }
-  if (request.indexOf("/LED=ON") != -1) {
-    Serial.println("prendido");
-    //digitalWrite(14,LOW);
-   // delay(1000);
+ 
+  if (request.indexOf("/arriba") != -1) {
+   digitalWrite(in1,LOW);
+   digitalWrite(in2,HIGH);
   } 
+  if (request.indexOf("/bajar")!=-1){
+    digitalWrite(in1,HIGH);
+   digitalWrite(in2,LOW);
+    }
+  if(request.indexOf("/parar")!=-1){
+    digitalWrite(in1,LOW);
+   digitalWrite(in2,LOW);
+    }
   
  
   
@@ -112,7 +133,7 @@ WiFiClient client = server.available();
   client.println("<meta charset=\"UTF-8\">");
   client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"); //Para que se adapte en móviles
   client.println("<title>Servidor Web ESP8266</title>");
-  
+  client.println("<p>HOLAAAAA</p>");
   client.println("</body>");
   
   client.println("</html>"); //Terminamos el HTML
@@ -121,3 +142,4 @@ WiFiClient client = server.available();
   Serial.println("Cliente desconectado"); //Imprimimos que terminó el proceso con el cliente desconectado
   Serial.println("");
 }
+  
