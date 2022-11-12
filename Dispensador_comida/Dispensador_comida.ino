@@ -7,13 +7,9 @@
 #include <string.h>
 #include <Servo.h>
 Servo servo;
-int echo = 7;
-int trig =8;
-int duracion;
-int distancia;
 WiFiServer server(80);
-#define data_url  "lednodemcu-c09c6-default-rtdb.firebaseio.com"
-#define data_secret  "PoutAh31PLV2r7cEfY5ROUFc5CRkbktl0gGQy6Qf"
+#define data_url  "https://dispensador-ca5ae-default-rtdb.firebaseio.com/"
+#define data_secret  "WMMaxSwOmvYGvCls8DfwfKx3XyyjAFuEhcI6ZYGJ"
 
 //creamos la  base de datos en el programa
 FirebaseData fbdo;
@@ -27,13 +23,12 @@ int count = 0;
 void setup(){
   Serial.begin(115200);
   WiFiManager wf;
-  setTime(14,17,8,6,9,2022);
+  setTime(14,30,10,12,11,2022);
   //descomentar linea para resetear configuracion de wifi
   //wf.resetSettings();
   servo.attach(2);
   wf.autoConnect("miwifi","contraseña");
-  pinMode(echo,INPUT);
-  pinMode(trig,OUTPUT);
+  
   IPAddress ip(192,168,1,21);     
   IPAddress gateway(192,168,1,1);   
   IPAddress subnet(255,255,255,0); 
@@ -51,15 +46,24 @@ server.begin();
 }
 String Hora;
 String Minuto;
-
+String Hora1;
+String Minuto1;
 void loop(){
- ultra();
-if(Firebase.RTDB.getString(&fbdo,"Hora")){
+ 
+if(Firebase.RTDB.getString(&fbdo,"DIA/Hora")){
   Hora = fbdo.stringData();
   }
  
-if(Firebase.RTDB.getString(&fbdo,"Minuto")){
+if(Firebase.RTDB.getString(&fbdo,"DIA/Minuto")){
   Minuto = fbdo.stringData();
+  }
+  
+if(Firebase.RTDB.getString(&fbdo,"NOCHE/Hora")){
+  Hora1= fbdo.stringData();
+  }
+  
+if(Firebase.RTDB.getString(&fbdo,"NOCHE/Minuto")){
+  Minuto1 = fbdo.stringData();
   }
   int nH = hour();
   int nM = minute();
@@ -71,11 +75,13 @@ if(Firebase.RTDB.getString(&fbdo,"Minuto")){
   if(Hora == nH1 && Minuto == nM1){
     Serial.println("prendido");
     servo.write(90);
-    delay(10000);
-    servo.write(0);
-    
-    
-}
+    delay(8000);
+    servo.write(0);}
+    if(Hora1 == nH1 && Minuto1 == nM1){
+    Serial.println("prendido");
+    servo.write(90);
+    delay(8000);
+    servo.write(0);}
 
 WiFiClient client = server.available();
   if (!client) {
@@ -104,7 +110,6 @@ WiFiClient client = server.available();
   client.println("<meta charset=\"UTF-8\">");
   client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"); //Para que se adapte en móviles
   client.println("<title>Servidor Web ESP8266</title>");
-  client.println("<p>HOLAAAAA</p>");
   client.println("</body>");
   
   client.println("</html>"); //Terminamos el HTML
@@ -114,18 +119,4 @@ WiFiClient client = server.available();
   Serial.println("");
 }
 
-void ultra(){
-      
-    digitalWrite(trig,HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trig,LOW);
-    duracion = pulseIn(echo,HIGH);
-    distancia = duracion/58.2;
-    if (distancia <10 and distancia >0){
-      servo.write(90);
-      Serial.println("aca esta recibibiednp");
-      Serial.println(distancia);
-      delay(1000);
-      
-      }
-  }
+  

@@ -25,7 +25,7 @@ void setup(){
   pinMode(in1,OUTPUT);
   pinMode(in2,OUTPUT);
   WiFiManager wf;
-  setTime(14,17,8,6,9,2022);
+  setTime(14,30,10,12,11,2022);
   //descomentar linea para resetear configuracion de wifi
   //wf.resetSettings();
   wf.autoConnect("miwifi","contraseña");
@@ -90,7 +90,7 @@ if(Firebase.RTDB.getString(&fbdo,"NOCHE/Minuto")){
    digitalWrite(in2,HIGH);
    delay(7000);
    digitalWrite(in2,LOW);
-
+   delay(53000);
 }
 
   if(Hora1 == nH1 && Minuto1 == nM1){
@@ -98,6 +98,7 @@ if(Firebase.RTDB.getString(&fbdo,"NOCHE/Minuto")){
     digitalWrite(in1,HIGH);
     delay(7000);
     digitalWrite(in1,LOW);
+    delay(53000);
     }
 WiFiClient client = server.available();
   if (!client) {
@@ -133,7 +134,6 @@ WiFiClient client = server.available();
   client.println("<meta charset=\"UTF-8\">");
   client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"); //Para que se adapte en móviles
   client.println("<title>Servidor Web ESP8266</title>");
-  client.println("<p>HOLAAAAA</p>");
   client.println("</body>");
   
   client.println("</html>"); //Terminamos el HTML
