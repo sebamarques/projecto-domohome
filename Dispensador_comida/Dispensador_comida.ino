@@ -76,12 +76,14 @@ if(Firebase.RTDB.getString(&fbdo,"NOCHE/Minuto")){
     Serial.println("prendido");
     servo.write(90);
     delay(8000);
-    servo.write(0);}
+    servo.write(0);
+    delay(53000);}
     if(Hora1 == nH1 && Minuto1 == nM1){
     Serial.println("prendido");
     servo.write(90);
     delay(8000);
-    servo.write(0);}
+    servo.write(0);
+    delay(53000);}
 
 WiFiClient client = server.available();
   if (!client) {
@@ -95,7 +97,7 @@ WiFiClient client = server.available();
  
   if (request.indexOf("/alimentar") != -1) {
     servo.write(90);
-    delay(10000);
+    delay(8000);
     servo.write(0);
   } 
   
